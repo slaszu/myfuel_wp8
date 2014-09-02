@@ -67,4 +67,8 @@
     <gap:splash gap:platform="ios" height="768" src="res/screen/ios/screen-ipad-landscape.png" width="1024" />
     <gap:splash gap:platform="winphone" src="res/screen/windows-phone/screen-portrait.jpg" />
     <access origin="*" />
+	
+	
+	<gap:plugin name="ch.zhaw.sqlite" version="2.0.0" />
+	
 </widget>
