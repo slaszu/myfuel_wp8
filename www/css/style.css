@@ -1,0 +1,70 @@
+.ui-page:not(.plain) {
+    background: url(img/bg3.png);
+    background-repeat:repeat;
+    background-position:center center;
+    background-attachment:scroll;
+}
+
+.ui-content{
+    background: transparent;
+	opacity:0.88;
+}
+
+.ui-header {
+	zoom: 1.1;
+}
+
+.ui-header .ui-title {
+    margin-right: 10%;
+    margin-left: 10%;
+}
+
+.ui-btn-corner-all {
+border-radius: 0.2em;
+}
+
+.ui-li-has-thumb .ui-btn-inner a.ui-link-inherit, .ui-li-static.ui-li-has-thumb  {
+	min-height: 30px; padding-left: 60px;
+}
+
+.ui-li-thumb {
+	max-height: 40px; max-width: 40px; padding: 10px;
+}
+
+.ui-li-aside {
+	width: 35%;
+	margin-top: -6px;
+}
+
+.jqplot-point-label {
+	padding: 1px 3px;
+}
+
+span.error {
+    color: red;
+    font-weight: normal;
+    line-height: 1.4;
+}
+
+span.info {
+    font-weight: normal;
+    line-height: 1.4;
+	font-size: 12px;
+}
+
+@media screen and (orientation: portrait){
+    span.error { margin-left: 0; display: block; }
+	span.info { margin-left: 0; display: block; }
+}
+
+@media screen and (orientation: landscape){
+    span.error { display: inline-block; margin-left: 22%; }
+	span.info { display: inline-block; margin-left: 22%; }
+}
+
+em { color: red; font-weight: bold; padding-right: .25em; }
+
+.dystans {
+margin-right: 5px;
+font-weight: normal;
+}

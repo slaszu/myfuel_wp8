@@ -1,0 +1,941 @@
+<!doctype html>
+<html class="no-js ui-mobile-rendering" lang="en">
+<head>
+	<title>myfuel</title>
+    <meta charset="utf-8" />
+	<meta name="description" content="">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="css/jquery.mobile-1.2.0.min.css" />
+	<link rel="stylesheet" href="css/style.css" />
+
+	<link rel="stylesheet" href="css/jquery.ui.datepicker.mobile.css" /> 
+	<link rel="stylesheet" href="css/jquery.jqplot.min.css" /> 
+	
+	<script type="text/javascript" charset="utf-8" src="phonegap.js"></script>
+	<script src="js/libs/require.js" data-main="js/mobile"></script>
+</head>
+<body>
+<div id="loading" data-role="page" data-title="Loading">
+
+	<div data-role="content">
+	</div><!-- /content -->
+	
+</div>
+
+
+
+<!---------------- synchronizacja ------------------------ -->
+
+<div id="synchro" data-role="page" data-title="Synchronizacja">
+
+</div>
+<!-- template -->
+<script id="synchroEditAccountCreate" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1 data-lang="synchronizacja">Synchronizacja</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+	
+		<form method="post" action="#" id="formAccountCreate">
+            <ul data-role="listview">
+
+                <li data-role="fieldcontain">
+                   <fieldset data-role="controlgroup">
+                       <legend data-lang="twoje_konto">Twoje konto</legend>
+                            <div>
+                                 <label for="login">Email</label>
+                                 <input type="email" name="login" id="login" value="" class="custom" />
+                                 <span></span>
+                            </div>
+                            <div>
+                                <label for="pass" data-lang="haslo">Hasło</label>
+                                <input type="password" name="pass" id="pass" value="" class="custom" />
+                                <span></span>
+                            </div>
+                            <div>
+                                <label for="pass2" data-lang="haslo2">Potwierdź hasło</label>
+                                <input type="password" name="pass2" id="pass2" value="" class="custom" />
+                                <span></span>
+                            </div>
+                    </fieldset>
+                </li>
+                
+                <li class="ui-body ui-body-b">
+                    <button type="button" data-theme="a" id="btnAccountCreate" data-lang="utworz">Utwórz</button>
+                </li>
+                
+                <li class="ui-body ui-body-b">
+                    <button type="button" data-theme="d" id="btnAccountLoginTo" data-lang="mam_konto">Mam już konto</button>
+                </li>
+                
+            </ul>
+        </form>
+	</div>
+    <div data-role="popup" id="accountInfoPopup" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+<script id="synchroEditAccountLogin" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1 data-lang="synchronizacja">Synchronizacja</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+	
+        <% ustawienia = ustawienia.toJSON() %>
+		<form method="post" action="#" id="formAccountLogin">
+            <ul data-role="listview">
+
+                <li data-role="fieldcontain">
+                   <fieldset data-role="controlgroup">
+                       <legend data-lang="twoje_konto">Twoje konto</legend>
+                            <div>
+                                <label for="login">Email</label>
+                                <input type="email" name="login" id="login" value="<%= ustawienia.login %>" class="custom" />
+                                <span></span>
+                            </div>
+                            
+                            
+                            <label for="pass" data-lang="haslo">Hasło</label>
+                            <input type="password" name="pass" id="pass" value="<%= ustawienia.pass %>" class="custom" />
+                            <span></span>
+                            
+                    </fieldset>
+                </li>
+                
+                <li class="ui-body ui-body-b">
+                    <button type="button" data-theme="a" id="btnAccountLogin" data-lang="logowanie">Logowanie</button>
+                </li>
+                
+                <li class="ui-body ui-body-b">
+                    <button type="button" data-theme="d" id="btnAccountCreateTo" data-lang="utworz_konto">Utwórz nowe konto</button>
+                </li>
+                
+            </ul>
+        </form>
+	</div>
+    <div data-role="popup" id="accountInfoPopup2" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+<script id="synchroExport" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1 data-lang="synchronizacja">Synchronizacja</h1>
+        <div data-role="navbar" >
+            <ul>
+                <li><a class="ui-btn-active ui-state-persist" data-lang="eksport_label">Eksport</a></li>
+                <li><a id="btnGoToImport" data-lang="import_label">Import</a></li>
+            </ul>
+        </div><!-- /navbar -->
+	</div><!-- /header -->
+	<div data-role="content">
+	
+		<form method="post" action="#" id="formSaveOnServer">
+            <ul data-role="listview">
+
+                <li data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                       <legend data-lang="pojazdy_urzadzenie">Pojazdy na urządzeniu</legend>
+
+                       <% _.each( collection.toJSON(), function( auto, id ) { %>
+
+                            <input type="checkbox" name="auto_<%= auto.id %>" id="c<%= auto.id %>" value="<%= auto.id %>" <% if (auto.synchro == 1) { %>checked<% } %> class="custom" />
+                            <label for="c<%= auto.id %>"><%= auto.nazwa %> <p><%= auto.opis %></p></label>
+
+                      <% }); %>
+
+                    </fieldset>
+                </li>
+             
+                <li class="ui-body ui-body-b">
+                    <p style="white-space:normal" data-lang="zapisz_na_serwer_info">
+                    Wpisy z WYBRANYCH POJAZDÓW zostaną zapisane na serwerze. W dowolnej chwili będziesz mógł wgrać je z powrótem do tego urządzenia.
+                    Dane te są powiązane z Twoim kontem, wieć korzystając z podanego adresu email i hasła, możesz je wgrać na dowolne inne urządzenie.
+                    Jeżeli NIEWYBRANE POJAZDY znajdują się już na serwerze, to zostaną z niego usunięte.
+                    </p>
+                    <button type="button" data-theme="a" id="btnSynchroSaveOnServer" data-lang="zapisz_na_serwerze">Wyślij na serwer</button>
+                </li>
+
+            </ul>
+        </form>
+        
+	</div>
+    <div data-role="popup" id="accountInfoPopup3" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+<script id="synchroImport" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1 data-lang="synchronizacja">Synchronizacja</h1>
+        <div data-role="navbar" >
+            <ul>
+                <li><a id="btnGoToExport" data-lang="eksport_label">Export</a></li>
+                <li><a class="ui-btn-active ui-state-persist" data-lang="import_label">Import</a></li>
+            </ul>
+        </div><!-- /navbar -->
+	</div><!-- /header -->
+	<div data-role="content">
+	
+		<form method="post" action="#" id="formGetFromServer">
+            <ul data-role="listview">
+
+                <li data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                       <legend data-lang="pojazdy_serwer">Pojazdy na serwerze</legend>
+
+                       <% _.each( collection, function( auto, id ) { %>
+
+                            <input type="checkbox" name="auto_<%= auto.id %>" id="c<%= auto.id %>" value="<%= auto.id %>" checked class="custom" />
+                            <label for="c<%= auto.id %>">
+                                <%= auto.nazwa %>
+                                <p><%= auto.opis %></p>
+                                <p><i><span data-lang="data_synchronizacji">Data synchronizacji</span> : <%= auto.data %></i></p>
+                            </label>
+
+                      <% }); %>
+
+                    </fieldset>
+                </li>
+             
+                <li class="ui-body ui-body-b">
+                    <p style="white-space:normal" data-lang="pobierz_z_serwera_info">
+                    Dane WYBRANYCH POJAZDÓW zostaną pobrane z serwera i wgrane na Twoje urządzenie.
+                    Zwróć uwagę na DATĘ OSTATNIEJ SYNCHRONIZACJI, ponieważ jeżeli pobrane pojazdy istnieją juz na tym urządzeniu
+                    to zostaną zastąpione danymi pobranymi z serwera.
+                    </p>
+                    <button type="button" data-theme="a" id="btnSynchroGetFromServer" data-lang="pobierz_z_serwera">Pobierz z serwera</button>
+                </li>
+
+            </ul>
+        </form>
+	</div>
+    <div data-role="popup" id="accountInfoPopup4" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+
+
+<!---------------- podsumowanie ------------------------ -->
+
+<div id="podsumowanie" data-role="page" data-title="Podsumowanie">
+
+
+</div>
+<!-- template -->
+<script id="podsumowanieContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1>auto</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+		<ul data-role="listview" data-divider-theme="d">
+			<li data-role="list-divider"><span data-lang="spalanie">Spalanie</span> [ <%= session.pojemnosc %>/100 <%= session.dlugosc %> ]</li>
+			<li>
+				<div class="ui-grid-a ui-responsive" style="font-size:0.9em; font-weight:normal">
+					<div class="ui-block-a"><div class="ui-body" data-lang="srednie">Średnie</div></div>
+					<div class="ui-block-b"><div class="ui-body"><b><%= dane.spalanie.avg %></b></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="minimalne">Minimalne</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.spalanie.min %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="maksymalne">Maksymalne</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.spalanie.max %></div></div>
+				</div>
+			</li>
+			
+			<li data-role="list-divider"><span data-lang="koszt">Koszt</span> [ <%= session.waluta %> ]</li>
+			<li>
+				<div class="ui-grid-a ui-responsive" style="font-size:0.9em; font-weight:normal">
+					<div class="ui-block-a"><div class="ui-body" data-lang="calkowity">Całkowity</div></div>
+					<div class="ui-block-b"><div class="ui-body"><b><%= dane.koszty.sum %></b></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="sredni_koszt_tankowania">Średni koszt tankowania</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.koszty.avg %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najdrozsze_tankowanie">Najdroższe tankowanie</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.koszty.max %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najtansze_tankowanie">Najtańsze tankowanie</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.koszty.min %></div></div>
+				</div>
+			</li>
+			
+			<li data-role="list-divider"><span data-lang="przebieg">Przebieg</span> [ <%= session.dlugosc %> ]</li>
+			<li>
+				<div class="ui-grid-a ui-responsive" style="font-size:0.9em; font-weight:normal">
+					<div class="ui-block-a"><div class="ui-body" data-lang="calkowity">Całkowity</div></div>
+					<div class="ui-block-b"><div class="ui-body"><b><%= dane.przebieg.all %></b></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="sredni_przebieg_miedzy_tankowaniami">Średni przebieg między tankowaniami</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.przebieg.between %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najwiekszy_przebieg_miedzy_tanowaniami">Najwięszy przebieg między tankowaniami</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.przebieg.between_max %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najmniejszy_przebieg_miedzy_tankowaniami">Najmniejszy przebieg między tankowaniami</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.przebieg.between_min %></div></div>
+				</div>
+			</li>
+			
+			<li data-role="list-divider"><span data-lang="paliwo">Paliwo</span> [ <%= session.pojemnosc %> ]</li>
+			<li>
+				<div class="ui-grid-a ui-responsive" style="font-size:0.9em; font-weight:normal">
+					<div class="ui-block-a"><div class="ui-body" data-lang="cale_zuzyte_paliwo">Całe zużyte paliwo</div></div>
+					<div class="ui-block-b"><div class="ui-body"><b><%= dane.paliwo.sum %></b></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="srednia_tankowana_ilosc">Średnia tankowana ilość</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.paliwo.avg %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najwieksza_tankowana_ilosc">Największa tankowana ilość</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.paliwo.max %></div></div>
+					
+					<div class="ui-block-a"><div class="ui-body" data-lang="najmniejsza_tankowana_ilosc">Najmniejsza tankowana ilość</div></div>
+					<div class="ui-block-b"><div class="ui-body"><%= dane.paliwo.min %></div></div>
+				</div>
+			</li>
+		</ul>
+
+	</div>
+</script>
+
+
+<!---------------- ustawienia / settings ------------------------ -->
+
+<div id="ustawienia-edit" data-role="page" data-title="Ustawienia">
+</div>
+<!-- template -->
+<script id="ustawieniaEdit" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-inline="true" data-lang="wroc">wróć</a>
+		<h1 data-lang="ustawienia">Ustawienia</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+		<% ustawienia = ustawienia.toJSON() %>
+		<form method="post" action="#" id="formUstawieniaEdit">
+			<input type="hidden" name="id" value="<%= ustawienia.id %>"/>
+			<ul data-role="listview">
+				<% inna = true; %>
+				<li data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<legend data-lang="jednostka_dlugosci">Jednostka długości</legend>
+							<input type="radio" name="dlugosc" id="radio-km" value="km" <% if(ustawienia.dlugosc == "km") {inna = false;%> checked <%}%>/>
+							<label for="radio-km">Kilometr [ km ]</label>
+							
+							<input type="radio" name="dlugosc" id="radio-mila" value="mi" <% if(ustawienia.dlugosc == "mi") {inna = false;%> checked <%}%>/>
+							<label for="radio-mila">Mile [ mi ]</label>
+							
+					</fieldset>
+					<label for="dlugosc_inna" class="ui-input-text">&nbsp</label>
+					<input type="text" id="dlugosc_inna" data-lang="jednostka_dlugosci_inna" name="dlugosc_inna" placeholder="inna jednostka" value="<% if(inna == true) {%><%= ustawienia.dlugosc %><%}%>"/>
+					<span></span>
+					
+				</li>
+				
+				<% inna = true; %>
+				<li data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<legend data-lang="jednostka_pojemnosci">Jednostka pojemności</legend>
+							<input type="radio" name="pojemnosc" id="radio-l" value="l" <% if(ustawienia.pojemnosc == "l") {inna = false;%> checked <%}%>/>
+							<label for="radio-l">Litr [ l ]</label>
+							
+							<input type="radio" name="pojemnosc" id="radio-g" value="gal" <% if(ustawienia.pojemnosc == "gal") {inna = false;%> checked <%}%>/>
+							<label for="radio-g">Gallon [ gal ]</label>
+							
+					</fieldset>
+					<label for="pojemnosc_inna" class="ui-input-text">&nbsp</label>
+					<input type="text" name="pojemnosc_inna" data-lang="jednostka_pojemnosci_inna" placeholder="inna jednostka" value="<% if(inna == true) {%><%= ustawienia.pojemnosc %><%}%>"/>
+					<span></span>
+					
+				</li>
+				
+				<% inna = true; %>
+				<li data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<legend data-lang="waluta">Waluta</legend>
+							<input type="radio" name="waluta" id="radio-pln" value="PLN" <% if(ustawienia.waluta == "PLN") {inna = false;%> checked <%}%>/>
+							<label for="radio-pln">Złoty [ PLN ]</label>
+							
+							<input type="radio" name="waluta" id="radio-euro" value="EUR" <% if(ustawienia.waluta == "EUR") {inna = false;%> checked <%}%>/>
+							<label for="radio-euro">Euro [ EUR ]</label>
+							
+							<input type="radio" name="waluta" id="radio-pound" value="GBP" <% if(ustawienia.waluta == "GBP") {inna = false;%> checked <%}%>/>
+							<label for="radio-pound">Pound [ GBP ]</label>
+							
+							<input type="radio" name="waluta" id="radio-dollar" value="USD" <% if(ustawienia.waluta == "USD") {inna = false;%> checked <%}%>/>
+							<label for="radio-dollar">Dollar [ USD ]</label>
+							
+					</fieldset>
+					<label for="waluta_inna" class="ui-input-text">&nbsp</label>
+					<input type="text" name="waluta_inna" data-lang="waluta_inna" placeholder="inna waluta" value="<% if(inna == true) {%><%= ustawienia.waluta %><%}%>"/>
+					<span></span>
+					
+				</li>
+				
+				<li data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<legend data-lang="jezyk">Język</legend>
+							<input type="radio" name="lang" id="radio-en" value="en" <% if(ustawienia.lang == "en") {%> checked <%}%>/>
+							<label for="radio-en">English</label>
+							
+							<input type="radio" name="lang" id="radio-pl" value="pl" <% if(ustawienia.lang == "pl") {%> checked <%}%>/>
+							<label for="radio-pl">Polski</label>
+							
+							<input type="radio" name="lang" id="radio-de" value="de" <% if(ustawienia.lang == "de") {%> checked <%}%>/>
+							<label for="radio-de">Deutsch</label>
+					</fieldset>
+				</li>
+				
+                <li data-role="fieldcontain">
+					<fieldset data-role="controlgroup">
+						<legend data-lang="keyboard">Klawiatura dla liczb</legend>
+							<input type="radio" name="keyboard" id="radio-keyboard-1" value="1" <% if(ustawienia.keyboard == "1" || ustawienia.keyboard == null) {%> checked <%}%>/>
+							<label for="radio-keyboard-1" data-lang="keyboard_num">Numeryczna</label>
+							
+							<input type="radio" name="keyboard" id="radio-keyboard-2" value="2" <% if(ustawienia.keyboard == "2") {%> checked <%}%>/>
+							<label for="radio-keyboard-2" data-lang="keyboard_def">Standardowa</label>
+					</fieldset>
+				</li>
+				
+                <li class="ui-body ui-body-b">
+					<button type="button" data-lang="zapisz" data-theme="a">Zapisz</button>
+				</li>
+			</ul>
+		</form>
+	</div>
+</script>
+
+
+
+
+
+
+
+
+<!---------------- wykres ------------------------ -->
+
+<div id="wykres" data-role="page" class="plain" data-title="Wykres">
+</div>
+<!-- template -->
+
+<script id="wykresContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-lista" data-role="button" data-icon="back" data-lang="wroc" data-inline="true">wróć</a>
+		<h1 data-lang="wykres">Wykres</h1>
+		<a class="ui-btn-right menu" data-role="button" data-icon="gear" data-lang="opcje" data-inline="true">opcje</a>
+	</div><!-- /header -->
+  
+	<div data-role="content">
+	
+		<div id="chart"></div>
+	
+	</div><!-- /content -->
+	
+	<div data-role="footer" data-position="fixed">
+		<div data-role="navbar">
+			<ul>
+				<li><a href="#wykres?spalanie" data-lang="spalanie" <% if (typ == "spalanie") { %>class="ui-btn-active ui-state-persist"<%}%>	>spalanie</a></li>
+				<li><a href="#wykres?cena" data-lang="cena" 		<% if (typ == "cena") { %>class="ui-btn-active ui-state-persist"<%}%>	>cena</a></li>
+				<li><a href="#wykres?koszty" data-lang="koszt" 		<% if (typ == "koszty") { %>class="ui-btn-active ui-state-persist"<%}%>	>koszty</a></li>
+			</ul>
+		</div>
+	</div>
+	
+	<div data-role="popup" id="optionsWykresPopup" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<ul data-role="listview" style="min-width:210px;">
+		</ul>
+	</div>
+</script>
+
+<script id="wykresOptions" type="text/template">
+	
+	<li data-role="divider" data-theme="a" data-lang="typ">Typ</li>
+	<% if (typ2 == "all") { %>
+		<li data-icon="false">
+			<a href="#wykres?<%= typ %>" data-lang="miesieczny">Miesięczny</a>
+		</li>
+	<% } else { %>
+		<li data-icon="false">
+			<a href="#wykres?<%= typ %>,all" data-lang="szczegolowy">Szczegółowy</a>
+		</li>
+	<% } %>
+	<li data-icon="false" data-theme="b">
+		<a href="#" data-rel="back" data-lang="wroc">Wróć</a>
+	</li>
+</script>
+
+
+
+
+
+
+
+
+
+<!---------------- tankowanie lista ------------------------ -->
+
+<div id="tankowanie-lista" data-role="page" data-title="Tankowania">
+
+	
+</div>
+<!-- template -->
+<script id="tankowanieContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a href="#tankowanie-edit" data-role="button" data-icon="plus" data-inline="true" data-theme="e" data-lang="tankuje">tankuje</a>
+		<h1>Tankowanie</h1>
+		<a class="ui-btn-right menu" data-role="button" data-icon="gear" data-inline="true" data-lang="opcje">opcje</a>
+	</div><!-- /header -->
+  
+	<div data-role="content">
+		<ul data-role="listview" data-divider-theme="c">
+		</ul>
+	</div><!-- /content -->
+	
+	<div data-role="popup" id="optionsTankowaniePopup" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<ul data-role="listview" style="min-width:210px;">
+			<li data-role="divider" data-theme="a" data-lang="tankowanie">Tankowanie</li>
+			<li data-icon="plus">
+				<a href="#auto-lista" data-lang="pojazdy">Pojazdy</a>
+			</li>
+			<li data-icon="info">
+				<a href="#podsumowanie" data-lang="podsumowanie">Podsumowanie</a>
+			</li>
+			<li data-icon="grid">
+				<a href="#wykres?spalanie" data-lang="wykres">Wykres</a>
+			</li>
+			<li data-icon="gear">
+				<a href="#ustawienia-edit" data-lang="ustawienia">Ustawienia</a>
+			</li>
+			<li data-icon="gear">
+				<a href="#synchro" data-lang="synchronizacja">Synchronizacja</a>
+			</li>
+			<li data-icon="info" data-theme="e">
+				<a onclick="navigator.app.loadUrl('http://www.myfuelapp.com/donate', { openExternal:true }); return false;">Support MyFuel</a>
+			</li>
+			<li data-icon="false" data-theme="b">
+				<a href="#" data-rel="back" data-lang="wroc">Wróć</a>
+			</li>
+		</ul>
+	</div>
+
+	<div data-role="popup" id="menuTankowaniePopup" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<ul data-role="listview" style="min-width:210px;">
+		</ul>
+	</div>
+	<div data-role="popup" id="deleteTankowaniePopup" data-theme="c" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+
+<script id="tankowanieItems" type="text/template">
+
+	<%
+		_.each( collection.toJSON(), function( tankowanie, index , list) {
+			// break condition
+			if (index >= Session.limit) {
+				return;
+			}
+			
+			var img = "fuel-medium.png";
+			var leftInfo = '';
+			var spalanieInfo = '';
+			
+			if (tankowanie.spalanie != '') {
+				spalanieInfo = Lang.getText("spalanie")+" :<strong>" +tankowanie.spalanie+" "+Session.pojemnosc+"</strong>";
+			} else {
+				spalanieInfo = "<i>"+Lang.getText("brak_informacji")+"</i>";
+			}
+				
+			if (!isNaN(tankowanie.cena) && tankowanie.cena != '') {
+				leftInfo = "<strong>"+(tankowanie.ilosc*tankowanie.cena).toFixed(2)+" "+Session.waluta+"</strong><br />";
+				
+			}
+			if (tankowanie.f == 1) {
+				img = "fuel-full.png";
+				leftInfo += Lang.getText("do_pelna")+"<br />";
+			}
+			if (tankowanie.r == 1) {
+				leftInfo += Lang.getText("byla_rezerwa");
+			}
+			
+			var dystans = "";
+			if (typeof list[index+1] == "object") {
+				dystans = tankowanie.przebieg - (list[index+1].przebieg);
+			}
+		
+	%>
+			
+			<li data-role="list-divider">
+				<%= Common.getDateAsString(tankowanie.data) %>
+				<span class="ui-li-count"><% if (dystans != "") { %><span class="dystans">+<%= dystans %></span> <% } %><%= tankowanie.przebieg %> <%= Session.dlugosc %></span>
+			</li>
+			<li data-icon="info">
+				<a id="<%= tankowanie.id%>" class="click">
+					<img src="img/<%= img %>">
+					<div>
+						<p><%= Lang.getText("zatankowano") %> :<strong><%= tankowanie.ilosc %> <%= Session.pojemnosc %></strong></p>
+						<p><%= spalanieInfo %></p>
+						<% if (!isNaN(tankowanie.cena) && tankowanie.cena != "") { %>
+							<p><%= Lang.getText("cena") %> :<strong><%= tankowanie.cena %> <%= Session.waluta %></strong></p>
+						<% } %>
+					</div>
+					<p class="ui-li-aside"><%= leftInfo %></p>
+				</a>
+			</li>
+
+	<% 
+		
+	});
+	%>
+	
+	<% if (collection.length > Session.limit && more === true) { %>
+		<li class="ui-body ui-body-b more">
+			<button class="more" type="button" data-theme="a" data-lang="wiecej">Więcej</button>
+		</li>
+	<% } %>
+</script>
+
+<script id="tankowanieMenu" type="text/template">
+	<% tankowanie = tankowanie.toJSON() %>
+
+	<li data-role="divider" data-theme="a"><span data-lang="tankowanie">Tankowanie</span></li>
+	<li data-icon="false">
+		<a href="#tankowanie-edit?<%= tankowanie.id %>" data-lang="edycja">Edytuj</a>
+	</li>
+	<li data-icon="false">
+		<a class="delete_popup" id="<%= tankowanie.id %>" data-lang="usun">Usuń</a>
+	</li>
+	<li data-icon="false" data-theme="b">
+		<a href="#" data-rel="back" data-lang="wroc">Wróć</a>
+	</li>
+</script>
+
+
+<script id="tankowanieDelete" type="text/template">
+	<% tankowanie = tankowanie.toJSON() %>
+	
+	<h3 class="ui-title"><span data-lang="na_pewno_usunac">Na pewno usunąć to tankowanie?</span></h3>
+	<p><%= Common.getDateAsString(tankowanie.data) %></p>
+	<p><span data-lang="przebieg">Przebieg</span>: <strong><%= tankowanie.przebieg %></strong> <%= Session.dlugosc %></p>
+	<p><span data-lang="ilosc_paliwa">Ilość paliwa</span> : <strong><%= tankowanie.ilosc %></strong> <%= Session.pojemnosc %></p>
+	<p><span data-lang="cena">Cena</span> : <strong><%= tankowanie.cena %></strong> <%= Session.waluta %></p>
+	<a id="<%= tankowanie.id %>" class="delete_final ui-btn ui-shadow ui-btn-corner-all ui-btn-up-e" data-role="button" data-theme="e" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span">
+		<span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text" data-lang="usun">Usuń</span></span>
+	</a>
+	<a data-role="button" data-rel="back" data-theme="b" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-up-b">
+		<span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text" data-lang="anuluj">Anuluj</span></span>
+	</a>  
+</script>
+
+
+<script id="tankowaniePodsumowanie" type="text/template">
+	<div class="ui-grid-a">
+		<div class="ui-block-a" data-lang="przebieg">Przebieg</div>
+		<div class="ui-block-b"><%= dane.przebieg %> <%= Session.dlugosc %></div>
+		
+		<div class="ui-block-a" data-lang="wlane_paliwo">Wlane paliwo</div>
+		<div class="ui-block-b"><%= dane.paliwo.toFixed(2) %> <%= Session.pojemnosc %></div>
+		
+		<div class="ui-block-a" data-lang="koszt">Koszty</div>
+		<div class="ui-block-b"><%= dane.koszty.toFixed(2) %> <%= Session.waluta %></div>
+		
+		<div class="ui-block-a" data-lang="spalanie">Spalanie</div>
+		<div class="ui-block-b"><%= dane.spalanie.toFixed(2) %></div>
+
+	</div>
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- --------------------- tankowanie edycja ------------------------ -->
+
+<div id="tankowanie-edit" data-role="page" data-title="Tankowanie edycja">
+</div>
+<!-- template -->
+<script id="tankowanieEditContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a class="ui-btn-left" href="#tankowanie-lista" data-icon="back" data-lang="wroc">wróc</a>
+		<h1 data-lang="tankowanie">Tankowanie</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+	</div><!-- /content -->
+	<div data-role="popup" id="datepickerPopup" data-theme="c" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="wybierz_date">Wybierz date</h1>
+		</div>
+		<div id="datepickerContent" data-theme="d" class="ui-content" style="min-width:210px;">
+		</div>
+		<div data-role="footer" data-theme="b">
+			<div data-role="navbar">
+				<ul>
+					<li><a data-rel="back" data-lang="wroc">Wróć</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="tankowanieEdit" type="text/template">
+	<% 
+	tankowanie = tankowanie.toJSON();
+	auto = auto.toJSON();
+	tankowanieLast = tankowanieLast.toJSON();
+	%>
+	<form method="post" action="#" id="formTankowanieEdit">
+		<input type="hidden" name="id" value="<%= tankowanie.id %>"/>
+		<input type="hidden" name="id_auto" value="<%= auto.id %>"/>
+		<ul data-role="listview">
+						
+			<li data-role="fieldcontain">
+				<label for="przebieg" class="ui-input-text"><span data-lang="aktualny_przebieg">Aktualny przebieg</span> [<%= Session.dlugosc %>]</label>
+				<input type="<% if (Session.keyboard == 1) { %>number<% } else { %>text<% } %>" class="input_number" name="przebieg" value="<%= tankowanie.przebieg %>"/>
+				<% if (typeof tankowanieLast.id !== "undefined") {%>
+					<span class="info"><span data-lang="ostatnio">ostatnio</span> <%=tankowanieLast.przebieg%></span>
+				<%} else { %>
+					<span></span>
+				<% } %>
+			</li>
+										
+			<li data-role="fieldcontain">
+				<label for="ilosc" class="ui-input-text"><span data-lang="ilosc_wlanego_paliwa">Ilość wlanego paliwa</span> [<%= Session.pojemnosc %>]</label>
+				<input type="<% if (Session.keyboard == 1) { %>number<% } else { %>text<% } %>" class="input_number" name="ilosc" value="<%= tankowanie.ilosc %>"/>
+				<span></span>
+			</li>
+			
+			<li data-role="fieldcontain">
+				<label for="ilosc" class="ui-input-text"><span data-lang="cena_za">Cena za</span> 1 <%= Session.pojemnosc %></label>
+				<input type="<% if (Session.keyboard == 1) { %>number<% } else { %>text<% } %>" class="input_number" name="cena" value="<%= tankowanie.cena %>"/>
+				<span></span>
+			</li>
+			
+			<li data-role="fieldcontain">
+				<fieldset data-role="controlgroup" data-type="horizontal">
+					<legend class="ui-input-text" data-lang="informacje_dodatkowe">Informacje dodatkowe</legend>
+					
+					<input type="hidden" name="r" value="0"/>
+					<input type="checkbox" name="r" value="1" id="r" <% if (tankowanie.r == 1) {%>checked<%}%> />
+					<label for="r" data-lang="byla_rezerwa">była rezerwa</label>
+					
+					<input type="hidden" name="f" value="0"/>
+					<input type="checkbox" name="f" value="1" id="f" <% if (tankowanie.f == 1) {%>checked<%}%> />
+					<label for="f"><b data-lang="do_pelna">do pełna</b></label>
+					
+				</fieldset>
+				<span></span>
+			</li>
+			
+			<li data-role="fieldcontain">
+				<label for="data" class="ui-input-text" data-lang="data">Data</label>
+				<button type="button" data-icon="grid" id="dateBtn"><%= Common.getDateAsString(tankowanie.data) %></button>
+				<input name="data" type="hidden" value="<%= tankowanie.data %>" />
+				<span></span>
+			</li>
+			
+			<li class="ui-body ui-body-b">
+				<button class="submit" type="button" data-theme="a" data-lang="zapisz">Zapisz</button>
+			</li>
+		
+		</ul>
+					
+	</form>
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- --------------------- auto lista ------------------------ -->
+
+<div id="auto-lista" data-role="page" data-title="Auta">	
+</div>
+<!-- template -->
+<script id="autoContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a class="ui-btn-left" href="#tankowanie-lista" data-icon="back" data-lang="wroc">wróc</a>
+		<h1 data-lang="pojazdy">Pojazdy</h1>
+		<a class="ui-btn-right" href="#auto-edit" data-icon="add" data-lang="nowy">nowy</a>
+	</div><!-- /header -->
+  
+	<div data-role="content">
+		<ul data-role="listview" data-divider-theme="c">
+		</ul>
+	</div><!-- /content -->
+	  
+	<div data-role="popup" id="menuAutoPopup" data-theme="b" data-overlay-theme="a" data-corners="false">
+		<ul data-role="listview" style="min-width:210px;">
+		</ul>
+	</div>
+	<div data-role="popup" id="deleteAutoPopup" data-theme="c" data-overlay-theme="a" data-corners="false">
+		<div data-role="header" data-theme="a">
+			<h1 data-lang="ostrzezenie">Ostrzeżenie</h1>
+		</div>
+		<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+		</div>
+	</div>
+</script>
+
+<script id="autoItems" type="text/template">
+
+      <% _.each( collection.toJSON(), function( auto, id ) { %>
+			
+            <li <% if (auto.synchro == 0) { %>data-theme="e"<% } %>>
+				<a class="click" id="<%= auto.id %>">
+					<h3 class="ui-li-heading">
+						<%= auto.nazwa %>
+						<% if (auto.aktywny == 1) { %>
+							*
+						<% } %>
+					</h3>
+					<p>
+						<%= auto.opis %>
+					</p>
+                    <% if (auto.synchro == 0) { %>
+                        <p class="ui-li-aside">
+                            Synchro. OFF
+                        </p>
+                    <% } %>
+				</a>
+            </li>
+
+      <% }); %>
+
+</script>
+
+<script id="autoMenu" type="text/template">
+	<% auto = auto.toJSON() %>
+
+	<li data-role="divider" data-theme="a"><span data-lang="pojazdy">Pojazd</span></li>
+	<li data-icon="false" data-theme="e">
+		<a class="choose" id="<%= auto.id %>" data-lang="tankuje">Tankuję</a>
+	</li>
+	<li data-icon="false">
+		<a href="#auto-edit?<%= auto.id %>" data-lang="edycja">Edytuj</a>
+	</li>
+	<li data-icon="false">
+		<a class="delete_popup" id="<%= auto.id %>" data-lang="usun">Usuń</a>
+	</li>
+	<li data-icon="false" data-theme="b">
+		<a href="#" data-rel="back" data-lang="wroc">Wróć</a>
+	</li>
+</script>
+
+<script id="autoDelete" type="text/template">
+	<% auto = auto.toJSON() %>
+	
+	<h3 class="ui-title"><span data-lang="na_pewno_usunac_auto">Na pewno usunąć to auto?</span></h3>
+	<p><%= auto.nazwa %></p>
+	<p><%= auto.opis %></p>
+	<a id="<%= auto.id %>" class="delete_final ui-btn ui-shadow ui-btn-corner-all ui-btn-up-e" data-role="button" data-theme="e" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span">
+		<span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text" data-lang="usun">Usuń</span></span>
+	</a>
+	<a data-role="button" data-rel="back" data-theme="b" data-corners="true" data-shadow="true" data-iconshadow="true" data-wrapperels="span" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-up-b">
+		<span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text" data-lang="anuluj">Anuluj</span></span>
+	</a>  
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- --------------------- auto edycja ------------------------ -->
+
+<div id="auto-edit" data-role="page" data-title="Auta edycja">
+</div>
+<!-- template -->
+<script id="autoEditContent" type="text/template">
+	<div data-role="header" data-position="fixed">
+		<a class="ui-btn-left" href="#auto-lista" data-icon="back" data-lang="wroc">wróc</a>
+		<h1 data-lang="nowy_pojazd">Nowy</h1>
+	</div><!-- /header -->
+	<div data-role="content">
+	</div><!-- /content -->
+</script>
+
+<script id="autoEdit" type="text/template">
+	<% auto = auto.toJSON() %>
+	<form method="post" action="#" id="formAutoEdit">
+		<input type="hidden" name="id" value="<%= auto.id %>"/>
+		<input type="hidden" name="synchro" value="0" />
+		<ul data-role="listview">
+		
+			<li data-role="fieldcontain">
+				<label for="nazwa" class="ui-input-text" data-lang="marka_model">Marka i model</label>
+				<input type="text" name="nazwa" value="<%= auto.nazwa %>"/>
+				<span></span>
+			</li>
+				
+			<li data-role="fieldcontain">
+				<label for="opis" class="ui-input-text" data-lang="silnik">Silnik</label>
+				<input type="text" name="opis" value="<%= auto.opis %>"/>
+			</li>
+			
+            <li data-role="fieldcontain">
+                <fieldset data-role="controlgroup">
+                   <legend data-lang="synchronizacja">Synchronizacja</legend>
+                   <input type="checkbox" name="synchro" id="checkbox-synchro" value="1" class="custom" <% if (auto.synchro == 1) { %> checked <% } %> />
+                   <label for="checkbox-synchro" style="font-weight:normal" data-lang="domyslnie_zaznaczony">Domyślnie zaznaczony przy synchronizacji</label>
+                </fieldset>
+            </li>
+            
+			<li class="ui-body ui-body-b">
+				<button type="button" data-theme="a" data-lang="zapisz">Zapisz</button>
+			</li>
+		</ul>
+	</form>
+</script>
+
+
+
+</body>
+</html>
